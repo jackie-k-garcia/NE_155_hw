@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import  scipy.interpolate
+
+## Interpolating using Python's built-in functions
+
+x = np.linspace(0.75, 6.25, 110)
+
+xp = [1, 2, 3, 4, 5, 6, 7]
+fp = [1, 4, 10, 12, 5, 4, 0]
+
+## piecewise-linear-interpolation component
+pli = np.interp(x, xp, fp)
+
+plt.subplot(311)
+plt.xlabel('x')
+plt.ylabel('interpolated values')
+plt.title('Piecewise Linear Interpolation')
+plt.plot(xp, fp, 'ro')
+plt.plot(x, pli)
+
+## Lagrange-Polynomial-interpolation component
+
+lpi = scipy.interpolate.lagrange(xp, fp)
+
+y_lpi = []
+
+for i in x:
+    y_lpi.append(lpi(i))
+
+plt.subplot(312)
+plt.xlabel('x')
+plt.ylabel('interpolated values')
+plt.title('Lagrange Polynomial Interpolation')
+plt.plot(xp, fp, 'ro')
+plt.plot(x, y_lpi)
+
+## Spline-interpolation component (cubic)
+
+data_points = scipy.interpolate.splrep(xp, fp)
+si = scipy.interpolate.splev(x, data_points)
+
+plt.subplot(313)
+plt.xlabel('x')
+plt.ylabel('interpolated values')
+plt.title('Spline Interpolation')
+plt.plot(xp, fp, 'ro')
+plt.plot(x, si)
+plt.show()

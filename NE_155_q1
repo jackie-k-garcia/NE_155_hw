@@ -1,0 +1,57 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+## Actual Function
+
+x = np.linspace(-0.5, 4.5, 100)
+def y_actual(x):
+    '''
+    actual function
+    '''
+    return np.sin((np.pi / 2) * x) + (x ** 2) / 4
+
+y_a = []
+for i in x:
+    y_a.append(y_actual(i))
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Actual Function')
+plt.plot(x, y_a)
+plt.show()
+
+## Interpolant Function
+
+def y_inter(x):
+    '''
+    interpolant function
+    '''
+    return (x ** 3) / 3 - (7 / 4) * x ** 2 + (8 / 3) * x
+
+y_in = []
+for i in x:
+    y_in.append(y_inter(i))
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Interpolant Function')
+plt.plot(x, y_in)
+plt.show()
+
+## Redone Interpolant
+
+def y_reinter(x):
+    '''
+    redone interpolant function
+    '''
+    return (0.348 * x ** 3) - (1.829 * x ** 2) + 2.725 * x
+
+y_rein = []
+for i in x:
+    y_rein.append(y_reinter(i))
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Redone Interpolant Function')
+plt.plot(x, y_rein)
+plt.show()
