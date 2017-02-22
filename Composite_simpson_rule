@@ -1,0 +1,85 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = []
+
+def fun(x):
+    '''
+    This step is to define the function we are intregrating
+    '''
+    return x / np.sqrt(x ** 2 - 1)
+
+def x_axis_tool(n, a=2, b=4):
+    '''
+    This step creates an axis that will be used to perform Simpson's Rule
+    '''
+    x = np.linspace(a, b, (6 * n) + 2)
+    return x
+
+def CompSimp38(n, a = 2, b = 4):
+    '''
+    This is the Composite Simpson's 3/8th rule for the function defined above.
+    n has to be a whole number in order for the function to run accurately.
+    '''
+    x = x_axis_tool(n, a, b)
+    y = []
+    for i in x:
+        y.append(fun(i))
+    results = []
+    results.append(y[0])
+    i = 1
+    while i < len(x) - 1:
+        if i % 3 == 0:
+            results.append(2 * y[i])
+        else:
+            results.append(3 * y[i])
+        i += 1
+    i += 1
+    results.append(y[len(x)-1])
+    h = (b-a)/(6*n)
+    return (3/8)*h*sum(results), h
+
+'''
+i = 450
+while i < 500:
+    print('For n = {}'.format(6*i))
+    print(CompSimp38(i))
+    i+= 1
+'''
+lst_one = []
+i = 1
+while i < 50:
+    lst_one.append(CompSimp38(i)[0])
+    i += 1
+print(lst_one)
+
+x = range(i-1)
+new_x = []
+for i in x:
+    new_x.append(6 * i)
+#plt.ylabel('Computed Approximation')
+#plt.xlabel('n')
+#plt.title('Convergence of the Composite Simpsons 3/8ths Rule')
+#plt.plot(new_x, lst_one)
+#plt.plot(new_x, lst_one, 'ro')
+#plt.show()
+#print('Ratio between n=6 and n=12')
+#print((lst_one[0] - 2.141)/(lst_one[1] - 2.141))
+#print('Ratio between n=12 and n=24')
+#print((lst_one[1] - 2.141)/(lst_one[3] - 2.141))
+
+def convergence(value1, value2, h1, h2):
+    exact = 2.141
+    e1 = np.abs(value1 - exact)
+    e2 = np.abs(value2 - exact)
+    return (np.log(e2/e1))/(np.log(h2/h1))
+
+value1 = CompSimp38(1)
+value2 = CompSimp38(2)
+
+print(convergence(value1[0],value2[0], value1[1], value2[1]))
+
+value1 = CompSimp38(2)
+value2 = CompSimp38(4)
+
+print(convergence(value1[0],value2[0], value1[1], value2[1]))
