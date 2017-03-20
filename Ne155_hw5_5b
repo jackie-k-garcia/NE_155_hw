@@ -1,0 +1,79 @@
+import numpy as np
+import scipy.linalg
+import matplotlib.pyplot as plt
+
+def matrix_gen(n):
+
+    a =[]
+    i = 0
+    while i < n - 1:
+        a.append(-1)
+        i+=1
+        #Assigns value to lower diagonal and upper diagonal
+    b =[]
+    j = 0
+    while j < n:
+        b.append(3)
+        j+=1
+
+    def tridiag(a, b, c, k1=-1, k2=0, k3=1):
+        return np.diag(a, k1) + np.diag(b, k2) + np.diag(c, k3)
+        #A function that creates tridiagonal matrices
+
+    A = tridiag(a, b, a)
+
+    b_array = np.zeros((n, 1))
+    num = np.linspace(0, n - 1, n)
+
+    for i in num:
+        b_array[i][0] = 100
+
+    x_0 = np.zeros((n, 1))
+    return A, b_array, x_0
+
+A, b_array, x_0 = matrix_gen(5)
+D = np.diag(A)
+p_j = np.diagflat(D) - A
+
+exact_sol = np.dot(np.linalg.inv(A), b_array)
+
+def absolute_tolerance(x):
+    return np.linalg.norm(x- exact_sol)
+
+num = np.linspace(1.15, 2.5, 10)
+
+L = np.tril(A) #np.tril gives D+L
+U = A - L #A = L+U
+
+D = np.diagflat(D)
+#The following function will use SOR Iteration
+def SOR(x, w):
+    L_prime = L - D
+    coef1 = np.linalg.inv(D+(w*L_prime))
+    coef2 = np.dot(coef1, (((1-w)*D) - (w*U)))
+    addition = np.dot(coef1, w*b_array)
+    return np.dot(coef2, x) + addition
+
+num = np.linspace(.1, 2.5, 100)
+
+values = []
+for numbers in num:
+    abs_tol = 1
+    i = 0
+    x = x_0
+    #Iterates using SOR until desired absolute tolerance is achieved
+    while abs_tol > 10 ** (-6):
+        x = SOR(x, numbers)
+        abs_tol = absolute_tolerance(x)
+        i += 1
+    values.append(i)
+print(values)
+print(min(values))
+print(num[values.index(min(values))])
+plt.plot(num, values, linewidth=3, color = 'g')
+plt.xlim(0, 1.90)
+plt.ylim(0, 100)
+plt.xlabel("omega value")
+plt.ylabel("number of iterations")
+plt.title("Omega Minimization Curve")
+plt.show()

@@ -1,0 +1,52 @@
+import numpy as np
+import scipy
+import matplotlib.pyplot as plt
+
+def tridiag(a, b, c, k1=-1, k2=0, k3=1):
+    return np.diag(a, k1) + np.diag(b, k2) + np.diag(c, k3)
+    #A function that creates tridiagonal matrices
+
+a =[]
+i = 0
+while i < 99:
+    a.append(-1)
+    i+=1
+    #Assigns value to lower diagonal and upper diagonal
+
+b =[]
+j = 0
+while j < 100:
+    b.append(2)
+    j+=1
+    #Assigns value to center diagonal
+
+A = tridiag(a, b, a)
+
+b = np.zeros((100, 1))
+num = np.linspace(0, 99, 100)
+
+for i in num:
+    b[i][0] = i
+
+print(b)
+
+np.linalg.cond(A)
+#Condition number of matrix A
+
+inv_A = np.linalg.inv(A)
+#Computes the inverse of matrix A
+
+inv_sol = np.dot(inv_A, b)
+#Computes x by multiplying the inverse of A with array b
+print(inv_sol)
+
+#print(inv_sol)
+
+x = np.linalg.solve(A, b)
+#solves Ax = b
+
+plt.plot(inv_sol)
+plt.plot(x)
+plt.title('Solution Method Comparison')
+plt.legend(("Inverse A solution", "Built-in Function Solution"), loc = 'upper right')
+plt.show()

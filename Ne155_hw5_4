@@ -1,0 +1,114 @@
+import numpy as np
+import scipy.linalg
+import matplotlib.pyplot as plt
+
+#The following function creates our tridiagonal matrix
+def matrix_gen(n):
+
+    a =[]
+    i = 0
+    while i < n - 1:
+        a.append(-1)
+        i+=1
+        #Assigns value to lower diagonal and upper diagonal
+    b =[]
+    j = 0
+    while j < n:
+        b.append(3)
+        j+=1
+
+    def tridiag(a, b, c, k1=-1, k2=0, k3=1):
+        return np.diag(a, k1) + np.diag(b, k2) + np.diag(c, k3)
+        #A function that creates tridiagonal matrices
+
+    A = tridiag(a, b, a)
+
+    b_array = np.zeros((n, 1))
+    num = np.linspace(0, n - 1, n)
+
+    for i in num:
+        b_array[i][0] = 100
+
+    x_0 = np.zeros((n, 1))
+    return A, b_array, x_0
+
+A, b_array, x_0 = matrix_gen(5)
+
+#The following function calculates an approximation for x via Jacobi Method
+
+D = np.diag(A)
+p_j = np.diagflat(D) - A
+
+def Jacobi_method(x):
+    return np.dot(np.linalg.inv(np.diagflat(D)),np.dot(p_j, x)+b_array)
+
+exact_sol = np.dot(np.linalg.inv(A), b_array)
+
+def absolute_tolerance(x):
+    return np.linalg.norm(x- exact_sol)
+
+abs_tol = 1
+i = 0
+x = x_0
+#Iterates using Jacobi until desired absolute tolerance is achieved
+while abs_tol > 10 ** (-6):
+    x = Jacobi_method(x)
+    abs_tol = absolute_tolerance(x)
+    i += 1
+
+print("solutions using Jacobi Method:")
+print(x)
+print("required iterations using Jacobi method:")
+print(i)
+print(abs_tol)
+
+#The following function will use Gauss Seidel Iteration to solve x
+
+L = np.tril(A) #np.tril gives D+L
+U = A - L #A = L+U
+
+coef_1 = np.linalg.inv(L)
+coef_2 = np.dot(coef_1, -U)
+addition = np.dot(coef_1, b_array)
+def Gauss_Seidel(x):
+    return np.dot(coef_2, x) + addition
+
+abs_tol = 1
+i = 0
+x = x_0
+#Iterates using Gauss Seidel until desired absolute tolerance is achieved
+while abs_tol > 10 ** (-6):
+    x = Gauss_Seidel(x)
+    abs_tol = absolute_tolerance(x)
+    i += 1
+
+print("solutions using Gauss Seidel Method:")
+print(x)
+print("required iterations using Gauss Seidel method:")
+print(i)
+print(abs_tol)
+
+D = np.diagflat(D)
+#The following function will use SOR Iteration
+def SOR(x, w=1.15):
+    L_prime = L - D
+    coef1 = np.linalg.inv(D+(w*L_prime))
+    coef2 = np.dot(coef1, (((1-w)*D) - (w*U)))
+    addition = np.dot(coef1, w*b_array)
+    return np.dot(coef2, x) + addition
+
+abs_tol = 1
+i = 0
+x = x_0
+#Iterates using SOR until desired absolute tolerance is achieved
+while abs_tol > 10 ** (-6):
+    x = SOR(x)
+    abs_tol = absolute_tolerance(x)
+    i += 1
+
+
+print("solutions using SOR Method:")
+print(x)
+print("required iterations using SOR method:")
+print(i)
+print(abs_tol)
