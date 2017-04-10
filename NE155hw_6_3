@@ -1,0 +1,26 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+mesh = [1, 2, 3, 4, 5]
+
+#Following max relative error points were calculated with the previous code
+mesh_one = 0.12555
+mesh_amount_one = 8
+mesh_two =0.058864
+mesh_amount_two = 8/0.5
+mesh_three = 0.0111390173145
+mesh_amount_three = 8/0.1
+mesh_four = 0.00553
+mesh_amount_four = 8/0.05
+mesh_five = 0.00109975
+mesh_amount_five = 8/0.01
+
+mesh_amount = [8, mesh_amount_two, mesh_amount_three, mesh_amount_four, mesh_amount_five]
+
+error = [mesh_one, mesh_two, mesh_three, mesh_four, mesh_five]
+
+plt.plot(mesh_amount, error, "-.*")
+plt.xlabel('Mesh amount')
+plt.ylabel('Max Relative Error')
+plt.show()
+plt.title('Relative Error as a Function of Mesh')

@@ -1,0 +1,88 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import Ne155_hw5_4 as It_sol
+import copy
+
+SigA =0.7
+vSig = 0.6
+h = 0.1
+D = 1
+a = 4
+S = 8
+
+def makeQf = (vSig, phi):
+    Qf = vSig * phi
+    return Qf
+
+def makeA(h, n, D, SigA):
+    row_1 = -D / (h ** 2)
+    row_2 = (2 * D)/( h** 2) + SigA
+    row_3 = -D/(h ** 2)
+    values = [row_1, row_2, row_3]
+    diag = [-1, 0, 1]
+    A = sci.sparse.diags(values, diag, shape = (n+1, n+1)).todense()
+    #Adjust A for boundary conditions
+    A[0, 0] = 1
+    A[0, 1] = 0
+    A[n, n] = 1
+    A[n, n-1] = 0
+    return A
+
+#phi_in is the initial guess
+def IterSOl(SigA, vSig, h, D, phi_in, tol, k_0, k_tol, absolute = False):
+    n = np.size(phi_in)
+
+    phi_n = np.zeros(n)
+    phi_old = phi_in / np.linalg.norm(phi_in)
+    k_new = 0
+    k_old = k_0
+
+    A = makeA(h, n, D, SigA)
+    Qf_old = makeQf(vSig, phi_in)
+
+    phi_error = 0
+    k_error = 1
+    max_it = 100
+    eigen_it = 0
+    GS_it = [0]
+
+    while ((phi_error > tol) and (eigen_it < max_it) and (k_error > k_tol)):
+        eigen_it = eigen_it + 1
+
+        (phi_n, GS_error, phi_it) = It_sol.Gauss_Seidel()
+        #GS has been modified in hw 5 code to take in the inputs for this problem
+        GS_it.append(phi_it)
+
+        Qf_new = makeQf(vSig, phi_n)
+        k_new = k_old * (np.sum(Qf_new) / np.sum(Qf_old))
+
+        if (absolute == True):
+            phi_error = np.linalg.norm(np.abs(phi_n - phi_old), 2)
+            k_error = np.abs(k_new - k_old)
+        else:
+            phi_error = np.linalg.norm(np.abs(phi_n - phi_old), 2) / np.linalg.norm(phi_new, 2)
+            k_error = np.abs(k_new - k_old)
+
+        phi_old = copy.deecopy(phi_new)
+        k_old = copy.deecopy(k_new)
+        Qf_old = copy.deecopy(Qf_new)
+
+    phi_n = phi_n / np.linalg.norm(phi_n)
+    return("k": k_new, "k_error": k_error, "phi": phi_n, "phi_error": phi_error, "GS Iterations": GS_it, "Power Iterations": eigen_it)
+
+#Initialize guesses:
+phi_in = np.ones(n + 1)
+k_0 = 1
+tol = 1 * 10 **(-4)
+k_tol = 1 * 10 **(-4)
+
+sol = IterSol(SigA, vSig, h, D, phi_in, tol, k_0, k_tol, True)
+print(sol["k"])
+print(sol["Power Iterations"])
+
+x_axis = np.linspace(-a, a, n + 1)
+plt.plot(x_axis, sol["phi"], 'r--x')
+plt.xlabel('x')
+plt.ylabel('phi(x)')
+plt.title('Numerical Solution Eigenvector')
+plt.show
